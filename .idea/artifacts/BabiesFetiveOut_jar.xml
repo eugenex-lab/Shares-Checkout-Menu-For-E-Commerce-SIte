@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="BabiesFetiveOut:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/BabiesFetiveOut_jar</output-path>
+    <root id="archive" name="BabiesFetiveOut.jar">
+      <element id="module-output" name="BabiesFetiveOut" />
+    </root>
+  </artifact>
+</component>
