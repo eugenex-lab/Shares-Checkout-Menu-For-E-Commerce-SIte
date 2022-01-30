@@ -4,7 +4,7 @@ public class SharesMarket implements  Comparable <SharesMarket> {
     private final String stockName;
     private double stockPrice;
     private int stockQty = 0;
-
+    private int reservedShares = 0;
 
     public SharesMarket(String stockName, double stockPrice) {
         this.stockName = stockName;
@@ -26,8 +26,8 @@ public class SharesMarket implements  Comparable <SharesMarket> {
         return stockPrice;
     }
 
-    public int getStockQty() {
-        return stockQty;
+    public int sharesQTyAvailable() {
+        return stockQty-reservedShares;
     }
 
     public void setStockPrice(double stockPrice) {
@@ -37,11 +37,37 @@ public class SharesMarket implements  Comparable <SharesMarket> {
     }
 
     public void adjustStockCount(int stockQty) {
-        int newQty = this.getStockQty() + stockQty;
+        int newQty = this.sharesQTyAvailable() + stockQty;
         if (newQty >= 0) {
             this.stockQty = newQty;
         }
     }
+
+    public int reserveShare(int qty){
+        if(qty <= sharesQTyAvailable()){
+            reservedShares += qty;
+            return qty;
+        }
+        return 0;
+    }
+
+    public int unreservedShares (int qty){
+        if(qty<= reservedShares){
+            reservedShares -= qty;
+            return qty;
+        }
+        return 0;
+    }
+
+    public int finalStockCount(int qty){
+        if(qty<=reservedShares){
+            stockQty -= qty;
+            reservedShares -= qty;
+            return qty;
+        }
+        return 0;
+    }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -63,11 +89,10 @@ public class SharesMarket implements  Comparable <SharesMarket> {
 
     @Override
     public int compareTo(SharesMarket o) {
-        System.out.println("Entering ShareMarket.compareTo");
+//        System.out.println("Entering ShareMarket.compareTo");
         if (this == o) {
             return 0;
         }
-
         if (o != null) {
             return this.stockName.compareTo(o.getStockName());
         }
@@ -76,8 +101,8 @@ public class SharesMarket implements  Comparable <SharesMarket> {
 
     @Override
     public String toString() {
-        return this.stockName + " : stock price per DOllars is "
-                +  this.stockPrice;
+        return this.stockName + " : stock price--> "
+                +  this.stockPrice + " reserved  " + this.reservedShares;
     }
 }
 

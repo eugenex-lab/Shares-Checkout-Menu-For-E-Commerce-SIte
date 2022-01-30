@@ -6,76 +6,116 @@ public class StockMain {
     private static SharesOptions sharesOptions = new SharesOptions();
 
     public static void main(String[] args) {
-        SharesMarket temp = new SharesMarket("fb",18.2,3000);
+        SharesMarket temp = new SharesMarket("fb",18.2,10);
         sharesOptions.addStock(temp);
 
-        temp = new SharesMarket("Cabury",12.2,3000);
+        temp = new SharesMarket("Cabury",12.2,10);
         sharesOptions.addStock(temp);
 
-        temp = new SharesMarket("Texaco",12.2,3000);
+        temp = new SharesMarket("Texaco",12.2,10);
         sharesOptions.addStock(temp);
 
-        temp = new SharesMarket("JackAndJones",8.2,60000);
+        temp = new SharesMarket("JackAndJones",8.2,10);
         sharesOptions.addStock(temp);
 
-        temp = new SharesMarket("Halogen",3.2,400050);
+        temp = new SharesMarket("Halogen",3.2,10);
         sharesOptions.addStock(temp);
 
-        temp = new SharesMarket("biggs",14.2,3000);
+        temp = new SharesMarket("tesla",3.2,10);
         sharesOptions.addStock(temp);
 
-        temp = new SharesMarket("nestle",11.2,20000);
+        temp = new SharesMarket("biggs",14.2,10);
         sharesOptions.addStock(temp);
 
-        System.out.println(sharesOptions);
+        temp = new SharesMarket("jendolShares",14.2,10);
+        sharesOptions.addStock(temp);
+
+        temp = new SharesMarket("guiness",14.2,10);
+        sharesOptions.addStock(temp);
+
+        temp = new SharesMarket("nestle",11.2,10);
+        sharesOptions.addStock(temp);
+
+        System.out.println("###############################"+sharesOptions+"####################################");
 
         for(String s: sharesOptions.Items().keySet()){
             System.out.println(s);
         }
 
-        MenuCheckOut eugeneMenu = new MenuCheckOut("mtn");
-        sellItems(eugeneMenu, "mtn",12);
-        System.out.println(eugeneMenu);
+        MenuCheckOut eugeneMenu = new MenuCheckOut("eugene");
+        sellItems(eugeneMenu, "mtn",8);
+//        System.out.println(eugeneMenu);
 
         sellItems( eugeneMenu ,"bigs",6);
-        System.out.println(eugeneMenu);
+//        System.out.println(eugeneMenu);
 
-        if(sellItems(eugeneMenu, "nestle", 4009)!=2){
-            System.out.println("no nestle in stock ");
+        if(sellItems(eugeneMenu, "nestle", 9)!=1){
+            System.out.println(  " no nestle in stock ");
         }
 
-        sellItems(eugeneMenu,"Texaco",34);
+        sellItems(eugeneMenu,"Texaco",9);
+//        System.out.println(eugeneMenu);
+
+        sellItems(eugeneMenu,"JackAndJones",10);
+        sellItems(eugeneMenu,"bigs",2);
+        sellItems(eugeneMenu,"mtn",1);
         System.out.println(eugeneMenu);
 
-        sellItems(eugeneMenu,"JackAndJones",32);
-        sellItems(eugeneMenu,"bigs",12);
-        sellItems(eugeneMenu,"mtn",52);
-        System.out.println(eugeneMenu);
+        MenuCheckOut menuCheckOut = new MenuCheckOut("Xavi");
+        sellItems(menuCheckOut, "tesla", 4);
+        sellItems(menuCheckOut, "guiness", 4);
+        sellItems(menuCheckOut,"jendolShares",5);
+        removeShareItems(menuCheckOut, "tesla",10);
+        removeShareItems(menuCheckOut, "jensolShares" ,1);
+        System.out.println(menuCheckOut);
+
+
+        removeShareItems(eugeneMenu,"mtn", 1);
+
+
 
         System.out.println("$$$$$$"+sharesOptions+"$$$$$$");
 
-        sharesOptions.Items().get("bigs").adjustStockCount(320000000);
-        sharesOptions.get("bigs").adjustStockCount(-23);
+        sharesOptions.Items().get("nestle").adjustStockCount(15);
+        sharesOptions.get("bigs").adjustStockCount(15);
         System.out.println("$$$$$$"+sharesOptions+"$$$$$$");
         for (Map.Entry<String, Double> stockPrice:sharesOptions.PriceOPtion().entrySet()){
-            System.out.println( "product select has a " + stockPrice.getKey() + " cost " +
+            System.out.println( stockPrice.getKey() + " costs " +
                     stockPrice.getValue());
-            ///start
         }
     }
 
     public static int sellItems(MenuCheckOut menuCheckOut, String sellItems,int stockQty){
         SharesMarket sharesMarket = sharesOptions.get(sellItems);
         if(sharesMarket==null){
-            System.out.println("the stated stock is not in our repo" +
-                    "\n or available at this time " + sellItems);
+            System.out.println( sellItems + "Not available at this time " + "at quantity of " + stockQty  + " units");
             return 0;
         }
-        if(sharesOptions.sellShares(sellItems, stockQty)!=0){
-            menuCheckOut.addSharesToCheckOut(sharesMarket,stockQty);
-            return stockQty;
+        if(sharesOptions.reserveStock(sellItems, stockQty)!=0){
+//            menuCheckOut.addSharesToCheckOut(sharesMarket,stockQty);
+            return menuCheckOut.addSharesToCheckOut(sharesMarket, stockQty);
         }
         return 0;
     }
+
+
+    public static int removeShareItems(MenuCheckOut menuCheckOut, String sellItems,int stockQty){
+        SharesMarket sharesMarket = sharesOptions.get(sellItems);
+        if(sharesMarket==null){
+            System.out.println("stock not  available at this time " + sellItems);
+            return 0;
+        }
+        if(menuCheckOut.removeShareCheckOut(sharesMarket, stockQty)==stockQty){
+            return  sharesOptions.unReserveStock(sellItems,stockQty);
+        }
+        return 0;
+    }
+
+      public static void checkOut(MenuCheckOut menuCheckOut){
+        for(Map.Entry<SharesMarket, Integer> itemStock : menuCheckOut.StockPicksItems().entrySet()){
+            sharesOptions.sellShares(itemStock.getKey().getStockName(),itemStock.getValue());
+        }
+        menuCheckOut.clearMenuCheckout();
+      }
 }
 

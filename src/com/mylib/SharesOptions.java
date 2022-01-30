@@ -17,10 +17,10 @@ public class SharesOptions {
             SharesMarket inStock = list.getOrDefault(item.getStockName(), item );
 
             if(inStock != item){
-                item.adjustStockCount(inStock.getStockQty()); // add if it exist like mtn stock on mtn stock
+                item.adjustStockCount(inStock.sharesQTyAvailable()); // add if it exist like mtn stock on mtn stock
             }
             list.put(item.getStockName(),item);
-            return item.getStockQty();
+            return item.sharesQTyAvailable();
         }
         return  0 ;
     }
@@ -28,9 +28,32 @@ public class SharesOptions {
     public int sellShares (String item , int qty ) {
         SharesMarket inStock = list.getOrDefault(item, null);
 
-        if((inStock != null) && (inStock.getStockQty() >= qty ) && ((qty > 0 ))){
-            inStock.adjustStockCount(-qty);
-            return qty;
+        if((inStock != null) && (qty >0)){
+            return inStock.finalStockCount(qty);
+        }
+        return 0;
+
+//        if((inStock != null) && (inStock.sharesQTyAvailable() >= qty ) && ((qty > 0 ))){
+//            inStock.adjustStockCount(-qty);
+//            return qty;
+//        }
+//        return 0;
+    }
+
+    public int reserveStock(String item, int qty){
+        SharesMarket sharesAvailable = list.get(item);
+
+        if((sharesAvailable != null) && (qty >0)){
+            return sharesAvailable.reserveShare(qty);
+        }
+        return 0;
+    }
+
+    public int unReserveStock(String item, int qty){
+        SharesMarket sharesAvailable = list.get(item);
+
+        if((sharesAvailable != null) && (qty >0)){
+            return sharesAvailable.unreservedShares(qty);
         }
         return 0;
     }
@@ -58,7 +81,7 @@ public class SharesOptions {
         for (Map.Entry<String, SharesMarket> item : list.entrySet()){
             SharesMarket sharesMarket = item.getValue();
 
-            double itemValue  = sharesMarket.getStockPrice() * sharesMarket.getStockQty();
+            double itemValue  = sharesMarket.getStockPrice() * sharesMarket.sharesQTyAvailable();
 
             s = "We have an entry of  " + s + sharesMarket + " : THere  in stock. Vlaue of Item added ";
             s  = s + String.format(" %.2f",itemValue) + "\n";

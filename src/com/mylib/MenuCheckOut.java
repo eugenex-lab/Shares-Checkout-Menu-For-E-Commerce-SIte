@@ -21,6 +21,28 @@ public int addSharesToCheckOut(SharesMarket shareItem, int stockQty) {
         return 0;
 }
 
+public int removeShareCheckOut(SharesMarket stockItem,int qty){
+        if((stockItem != null) && (qty > 0)){
+            int inCheckout = list.getOrDefault(stockItem,0);
+            int newCheckout = inCheckout - qty;
+
+            if(newCheckout > 0){
+                list.put(stockItem,newCheckout);
+                return qty;
+            }else if(newCheckout == 0) {
+                list.remove(stockItem);
+                return qty;
+            }  
+        }
+
+        return 0;
+}
+
+public void clearMenuCheckout(){
+         this.list.clear();
+}
+
+
 public Map<SharesMarket, Integer> StockPicksItems(){
         return Collections.unmodifiableMap(list);
 }
